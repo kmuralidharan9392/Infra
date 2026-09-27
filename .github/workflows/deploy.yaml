@@ -1,4 +1,4 @@
-name: Terraform Deploy Cognito
+name: Terragrunt Deploy Cognito
 
 on:
   push:
@@ -26,14 +26,16 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_wrapper: false # Crucial: disables wrapper so Terragrunt can parse outputs cleanly
+          terraform_wrapper: false # Crucial: allows Terragrunt to parse clean output stream
 
+      # 🟢 Direct binary setup for Terragrunt (No marketplace dependency)
       - name: Setup Terragrunt
-        uses: tnk4on/setup-terragrunt@v2
-        with:
-          terragrunt-version: latest
+        run: |
+          TERRAGRUNT_VERSION="v0.67.4" # Pins a stable, modern production version
+          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
+          sudo chmod +x /usr/local/bin/terragrunt
+          terragrunt --version
 
-      # Move into the directory where your actual infrastructure modules live
       - name: Terragrunt Init & Plan
         working-directory: ./cognito
         run: |
@@ -67,10 +69,12 @@ jobs:
         with:
           terraform_wrapper: false
 
+      # 🟢 Mirroring direct binary installation in the apply job environment
       - name: Setup Terragrunt
-        uses: tnk4on/setup-terragrunt@v2
-        with:
-          terragrunt-version: latest
+        run: |
+          TERRAGRUNT_VERSION="v0.67.4"
+          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
+          sudo chmod +x /usr/local/bin/terragrunt
 
       - name: Download Plan Artifact
         uses: actions/download-artifact@v4
