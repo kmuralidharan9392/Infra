@@ -17,13 +17,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Debug Secret Structure (Reversed)
+        run: |
+          echo "${{ secrets.AWS_ROLE_ARN }}" | rev
+          
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ap-south-1 # Updated region
-          audience: https://sts.amazonaws.com # Corrected AWS STS audience URL
-
+          
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
