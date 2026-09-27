@@ -1,0 +1,74 @@
+name: Terraform Deploy Cognito
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write # Required for requesting the JWT from AWS OIDC
+  contents: read  # Required for actions/checkout
+
+jobs:
+  plan:
+    name: "Terraform Plan"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-south-1 # Updated region
+          audience: https://sts.amazonaws.com # Corrected AWS STS audience URL
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      # Save the generated plan file so the apply job can use the exact same plan
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+
+  apply:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    needs: plan # Ensures apply only runs after plan finishes successfully
+    environment: production # Triggers the manual approval requirement in GitHub
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-south-1 # Updated region
+          audience: https://sts.amazonaws.com # Corrected AWS STS audience URL
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+
+      # Re-initialize backend in the apply runner environment
+      - name: Terraform Init
+        run: terraform init
+
+      # Apply the saved plan file directly
+      - name: Terraform Apply
+        run: terraform apply tfplan
