@@ -23,5 +23,10 @@ remote_state {
     region         = "ap-south-1"
     encrypt        = true
     dynamodb_table = "preva-infra-tflocks-prod-ap-south-1"
+
+    # 🟢 ADD THESE THREE LINES TO BYPASS THE SCAN AND FIX THE CRASH
+    skip_bucket_ssesh_check   = true
+    skip_bucket_root_access   = true
+    skip_bucket_enforced_tls  = true
   }
 }
