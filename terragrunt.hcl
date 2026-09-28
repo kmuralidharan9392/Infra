@@ -12,11 +12,6 @@ EOF
 # Configure global remote state management via S3 and DynamoDB
 remote_state {
   backend = "s3"
-
-   # 🟢 MOVE THE CONTROLS HERE (OUTSIDE THE CONFIG BLOCK)
-  skip_bucket_ssesh_check   = true
-  skip_bucket_root_access   = true
-  skip_bucket_enforced_tls  = true
   
   generate = {
     path      = "backend.tf"
@@ -29,5 +24,8 @@ remote_state {
     region         = "ap-south-1"
     encrypt        = true
     dynamodb_table = "preva-infra-tflocks-prod-ap-south-1"
+
+      # 🟢 THE NATIVE V0.67.x+ ARGUMENT TO BYPASS S3 VALIDATION CHECKS
+    disable_bucket_update = true
   }
 }
