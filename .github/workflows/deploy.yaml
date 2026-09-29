@@ -1,9 +1,13 @@
-name: Terragrunt Deploy Cognito
+name: Terragrunt Infrastructure Pipeline
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'cognito/**'
+      - 'vpc/**'
+      - 'terragrunt.hcl'
 
 permissions:
   id-token: write # Required for requesting the JWT from AWS OIDC
@@ -11,7 +15,7 @@ permissions:
 
 jobs:
   plan:
-    name: "Terragrunt Plan"
+    name: "Terragrunt Plan All"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -26,33 +30,33 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_wrapper: false # Crucial: allows Terragrunt to parse clean output stream
+          terraform_wrapper: false 
 
-      # 🟢 Direct binary setup for Terragrunt (No marketplace dependency)
       - name: Setup Terragrunt
         run: |
-          TERRAGRUNT_VERSION="v0.67.4" # Pins a stable, modern production version
-          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
+          TERRAGRUNT_VERSION="v0.67.4"
+          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com{TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
           sudo chmod +x /usr/local/bin/terragrunt
-          terragrunt --version
 
-      - name: Terragrunt Init & Plan
-        working-directory: ./cognito
+      # 🟢 Plans all active folders (vpc and cognito) in parallel/sequence automatically
+      - name: Terragrunt Plan All
         run: |
-          terragrunt init
-          terragrunt plan -out=tfplan
+          terragrunt run-all plan --terragrunt-non-interactive -out=tfplan
 
-      - name: Upload Plan Artifact
+      # Bundles up all generated tfplan files from your workspaces
+      - name: Upload All Plan Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: tfplan
-          path: cognito/tfplan
+          name: infrastructure-tfplans
+          path: |
+            **/tfplan
+            .terragrunt-cache/
 
   apply:
-    name: "Terragrunt Apply"
+    name: "Terragrunt Apply All"
     runs-on: ubuntu-latest
     needs: plan 
-    environment: prod 
+    environment: prod # Triggers your manual review gate in GitHub
     
     steps:
       - name: Checkout Code
@@ -69,21 +73,19 @@ jobs:
         with:
           terraform_wrapper: false
 
-      # 🟢 Mirroring direct binary installation in the apply job environment
       - name: Setup Terragrunt
         run: |
           TERRAGRUNT_VERSION="v0.67.4"
-          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
+          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com{TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
           sudo chmod +x /usr/local/bin/terragrunt
 
-      - name: Download Plan Artifact
+      - name: Download All Plan Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: tfplan
-          path: cognito
+          name: infrastructure-tfplans
+          path: . # Places plans back exactly where they were generated
 
-      - name: Terragrunt Init & Apply
-        working-directory: ./cognito
+      # 🟢 Executes the saved plans concurrently across your active architecture
+      - name: Terragrunt Apply All
         run: |
-          terragrunt init
-          terragrunt apply tfplan
+          terragrunt run-all apply --terragrunt-non-interactive tfplan
