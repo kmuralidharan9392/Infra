@@ -28,11 +28,13 @@ jobs:
         with:
           terraform_wrapper: false 
 
+       # 🟢 Direct binary setup for Terragrunt (No marketplace dependency)
       - name: Setup Terragrunt
         run: |
-          TERRAGRUNT_VERSION="v0.67.4"
-          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com{TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
+          TERRAGRUNT_VERSION="v0.67.4" # Pins a stable, modern production version
+          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
           sudo chmod +x /usr/local/bin/terragrunt
+          terragrunt --version
 
       # 🟢 Plans all active folders (vpc and cognito) in parallel/sequence automatically
       - name: Terragrunt Plan All
@@ -46,7 +48,7 @@ jobs:
           name: infrastructure-tfplans
           path: |
             **/tfplan
-            .terragrunt-cache/
+            **/.terragrunt-cache/ # 🟢 FIXED: Recursively finds all workspace caches
 
   apply:
     name: "Terragrunt Apply All"
@@ -69,11 +71,13 @@ jobs:
         with:
           terraform_wrapper: false
 
+       # 🟢 Direct binary setup for Terragrunt (No marketplace dependency)
       - name: Setup Terragrunt
         run: |
-          TERRAGRUNT_VERSION="v0.67.4"
-          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com{TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
+          TERRAGRUNT_VERSION="v0.67.4" # Pins a stable, modern production version
+          sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
           sudo chmod +x /usr/local/bin/terragrunt
+          terragrunt --version
 
       - name: Download All Plan Artifacts
         uses: actions/download-artifact@v4
