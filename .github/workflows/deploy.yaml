@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'cognito/**'
-      - 'vpc/**'
-      - 'terragrunt.hcl'
 
 permissions:
   id-token: write # Required for requesting the JWT from AWS OIDC
