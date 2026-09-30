@@ -1,6 +1,10 @@
 resource "aws_cognito_user_pool" "user_pool" {
-  name                = "backend-auth-user-pool"
-  username_attributes = ["email"]
+  name = "backend-auth-user-pool"
+
+  # 🟢 1. ALLOW BOTH ALIASES FOR LOGIN DOWN THE LINE
+  username_attributes = ["email", "phone_number"]
+  
+  # Only auto-verify email for now (sends free verification emails)
   auto_verified_attributes = ["email"]
 
   password_policy {
@@ -11,17 +15,27 @@ resource "aws_cognito_user_pool" "user_pool" {
     require_uppercase = true
   }
 
+  # 🟢 2. MANDATORY EMAIL SCHEMA
   schema {
     attribute_data_type = "String"
     mutable             = true
     name                = "email"
-    required            = true
+    required            = true # Must be provided at signup
     string_attribute_constraints {
       min_length = 7
       max_length = 256
     }
   }
+
+  # 🟢 3. OPTIONAL PHONE NUMBER SCHEMA (Ensures future proofing)
+  schema {
+    attribute_data_type = "String"
+    mutable             = true
+    name                = "phone_number"
+    required            = false # ◄── CRUCIAL: Keep this false for now!
+  }
 }
+
 
 resource "aws_cognito_user_pool_client" "client" {
   name         = "backend-service-client"
