@@ -38,17 +38,9 @@ jobs:
 
       # 🟢 Plans all active folders (vpc and cognito) in parallel/sequence automatically
       - name: Terragrunt Plan All
+        working-directory: ./prod
         run: |
           terragrunt run-all plan --terragrunt-non-interactive -out=tfplan
-
-      # Bundles up all generated tfplan files from your workspaces
-      - name: Upload All Plan Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: infrastructure-tfplans
-          path: |
-            **/tfplan
-            **/.terragrunt-cache/ # 🟢 FIXED: Recursively finds all workspace caches
 
   apply:
     name: "Terragrunt Apply All"
@@ -78,14 +70,9 @@ jobs:
           sudo wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
           sudo chmod +x /usr/local/bin/terragrunt
           terragrunt --version
-
-      - name: Download All Plan Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: infrastructure-tfplans
-          path: . # Places plans back exactly where they were generated
-
+          
       # 🟢 Executes the saved plans concurrently across your active architecture
       - name: Terragrunt Apply All
+        working-directory: ./prod
         run: |
           terragrunt run-all apply --terragrunt-non-interactive tfplan
