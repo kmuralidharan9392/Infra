@@ -26,8 +26,9 @@ dependency "cognito" {
   # 🟢 Fixed: Changed to allowed commands configuration
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 
-  # 🟢 Tells Terragrunt WHEN it can use mocks (even if an empty/outdated state is found)
-  mock_outputs_allowed_statuses = ["unapplied"]
+  # 🟢 If this is true, Terragrunt won't even look at the S3 state file!
+  # It will strictly use the mock_outputs block instead.
+  skip_outputs = get_env("INITIAL_BOOTSTRAP", "false") == "true"
 }
 
 # 2. Pull details from your custom VPC workspace state file
@@ -43,8 +44,9 @@ dependency "vpc" {
   # 🟢 Fixed: Changed to allowed commands configuration
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 
-  # 🟢 Tells Terragrunt WHEN it can use mocks (even if an empty/outdated state is found)
-  mock_outputs_allowed_statuses = ["unapplied"]
+  # 🟢 If this is true, Terragrunt won't even look at the S3 state file!
+  # It will strictly use the mock_outputs block instead.
+  skip_outputs = get_env("INITIAL_BOOTSTRAP", "false") == "true"
 }
 
 # 3. Pull details from your custom IAM workspace state file
@@ -58,8 +60,9 @@ dependency "iam" {
   # 🟢 Fixed: Changed to allowed commands configuration
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 
-  # 🟢 Tells Terragrunt WHEN it can use mocks (even if an empty/outdated state is found)
-  mock_outputs_allowed_statuses = ["unapplied"]
+  # 🟢 If this is true, Terragrunt won't even look at the S3 state file!
+  # It will strictly use the mock_outputs block instead.
+  skip_outputs = get_env("INITIAL_BOOTSTRAP", "false") == "true"
 }
 
 # 🟢 Map those local configurations down to the module's input variables
