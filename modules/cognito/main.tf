@@ -27,6 +27,7 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   schema {
     attribute_data_type = "String"
+    developer_only_attribute = false # 🟢 Add this explicitly
     mutable             = true
     name                = "email"
     required            = true 
@@ -38,6 +39,7 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   schema {
     attribute_data_type = "String"
+    developer_only_attribute = false # 🟢 Add this explicitly
     mutable             = true
     name                = "phone_number"
     required            = false 
