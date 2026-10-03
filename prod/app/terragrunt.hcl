@@ -20,6 +20,8 @@ dependency "cognito" {
   # 🟢 Added mock outputs for the plan phase
   mock_outputs = {
     cognito_client_id = "mock-client-id"
+    cognito_user_pool_id  = "mock-user-pool-id"
+    cognito_client_secret = "mock-client-secret-string-12345"
   }
   # 🟢 Fixed: Changed to allowed commands configuration
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
@@ -57,8 +59,12 @@ inputs = {
   environment = local.env_vars.locals.environment
   aws_region  = local.env_vars.locals.aws_region
 
-  cognito_client_id     = dependency.cognito.outputs.cognito_client_id
   vpc_id                = dependency.vpc.outputs.vpc_id
   public_subnet_id      = dependency.vpc.outputs.public_subnet_id
   instance_profile_name = dependency.iam.outputs.instance_profile_name
+
+  # 🟢 Pass all three Cognito values down to the app server module
+  cognito_client_id     = dependency.cognito.outputs.cognito_client_id
+  cognito_user_pool_id  = dependency.cognito.outputs.cognito_user_pool_id
+  cognito_client_secret = dependency.cognito.outputs.cognito_client_secret
 }

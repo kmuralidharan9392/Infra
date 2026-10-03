@@ -87,3 +87,9 @@ output "cognito_user_pool_id" {
 output "cognito_client_id" {
   value = aws_cognito_user_pool_client.client.id
 }
+
+# 🟢 ADDED: We must export the generated client secret!
+output "cognito_client_secret" {
+  value     = aws_cognito_user_pool_client.client.client_secret
+  sensitive = true
+}
