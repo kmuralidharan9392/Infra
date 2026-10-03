@@ -25,6 +25,9 @@ dependency "cognito" {
   }
   # 🟢 Fixed: Changed to allowed commands configuration
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+
+  # 🟢 Tells Terragrunt WHEN it can use mocks (even if an empty/outdated state is found)
+  mock_outputs_allowed_statuses = ["unapplied"]
 }
 
 # 2. Pull details from your custom VPC workspace state file
@@ -39,6 +42,9 @@ dependency "vpc" {
   }
   # 🟢 Fixed: Changed to allowed commands configuration
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+
+  # 🟢 Tells Terragrunt WHEN it can use mocks (even if an empty/outdated state is found)
+  mock_outputs_allowed_statuses = ["unapplied"]
 }
 
 # 3. Pull details from your custom IAM workspace state file
@@ -51,6 +57,9 @@ dependency "iam" {
   }
   # 🟢 Fixed: Changed to allowed commands configuration
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+
+  # 🟢 Tells Terragrunt WHEN it can use mocks (even if an empty/outdated state is found)
+  mock_outputs_allowed_statuses = ["unapplied"]
 }
 
 # 🟢 Map those local configurations down to the module's input variables
