@@ -10,10 +10,14 @@ variable "aws_region" {
 }
 
 # Dependency injection variables from neighboring workspaces
-variable "cognito_client_id"     { type = string }
 variable "vpc_id"                { type = string }
 variable "public_subnet_id"      { type = string }
 variable "instance_profile_name" { type = string }
+
+# 🟢 ADDED: Accepting the complete Cognito bundle
+variable "cognito_client_id"     { type = string }
+variable "cognito_user_pool_id"  { type = string }
+variable "cognito_client_secret" { type = string }
 
 # 2. Fetch the latest official Ubuntu 24.04 LTS AMI in the active region
 data "aws_ami" "ubuntu" {
@@ -76,11 +80,15 @@ resource "aws_instance" "app_server" {
   iam_instance_profile   = var.instance_profile_name
 
   # Inject your Cognito settings cleanly as system environment variables on boot
+   # 🟢 UPDATED: Port fixed to 8080 and full environment variable context injected!
   user_data = <<-EOF
               #!/bin/bash
-              echo "export COGNITO_CLIENT_ID=${var.cognito_client_id}" >> /etc/profile.d/app_env.sh
-              echo "export PORT=80" >> /etc/profile.d/app_env.sh
+              echo "export PORT=8080" >> /etc/profile.d/app_env.sh
               echo "export APP_ENV=${var.environment}" >> /etc/profile.d/app_env.sh
+              echo "export AWS_REGION=${var.aws_region}" >> /etc/profile.d/app_env.sh
+              echo "export COGNITO_CLIENT_ID=${var.cognito_client_id}" >> /etc/profile.d/app_env.sh
+              echo "export COGNITO_USER_POOL_ID=${var.cognito_user_pool_id}" >> /etc/profile.d/app_env.sh
+              echo "export COGNITO_CLIENT_SECRET=${var.cognito_client_secret}" >> /etc/profile.d/app_env.sh
               EOF
 
   tags = {

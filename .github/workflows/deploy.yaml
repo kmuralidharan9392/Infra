@@ -41,6 +41,8 @@ jobs:
         working-directory: ./prod
         run: |
           terragrunt run-all plan --terragrunt-non-interactive
+        env:
+          INITIAL_BOOTSTRAP: "true" # 🟢 Forces Terragrunt to safely use mocks instead of reading empty/outdated states
 
   apply:
     name: "Terragrunt Apply All"
