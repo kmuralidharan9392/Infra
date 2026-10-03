@@ -4,7 +4,7 @@ include "root" {
 
 # 🟢 Tells Terragrunt where to find the single central source of truth for the EC2 TF code
 terraform {
-  source = "../../../modules/app_server"
+  source = "../../modules/app_server"
 }
 
 # 🟢 Automatically read values from the surrounding /prod/env.hcl file
