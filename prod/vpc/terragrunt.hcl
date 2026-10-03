@@ -4,7 +4,7 @@ include "root" {
 
 # 🟢 Tells Terragrunt where to find the single central source of truth for the vpc
 terraform {
-  source = "../../../modules/vpc"
+  source = "../../modules/vpc"
 }
 
 # 🟢 Automatically read values from the surrounding /prod/env.hcl file

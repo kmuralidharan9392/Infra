@@ -4,7 +4,7 @@ include "root" {
 
 # 🟢 Tells Terragrunt where to find the single central source of truth for the cognito
 terraform {
-  source = "../../../modules/cognito"
+  source = "../../modules/cognito"
 }
 
 # 🟢 Automatically read values from the surrounding /prod/env.hcl file
