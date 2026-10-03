@@ -12,12 +12,6 @@ locals {
   env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
 }
 
-# 🟢 Map those local configurations down to the module's input variables
-inputs = {
-  environment = local.env_vars.locals.environment
-  aws_region  = local.env_vars.locals.aws_region
-}
-
 # 1. Pull details from your Cognito workspace state file
 dependency "cognito" {
   # 🟢 UPDATED: Stays as "../cognito" because they are still neighbors inside the /prod folder!
@@ -35,8 +29,12 @@ dependency "iam" {
   config_path = "../iam"
 }
 
-# Bind outputs directly into our Terraform input variables
+# 🟢 Map those local configurations down to the module's input variables
 inputs = {
+
+  environment = local.env_vars.locals.environment
+  aws_region  = local.env_vars.locals.aws_region
+
   cognito_client_id     = dependency.cognito.outputs.cognito_client_id
   vpc_id                = dependency.vpc.outputs.vpc_id
   public_subnet_id      = dependency.vpc.outputs.public_subnet_id
