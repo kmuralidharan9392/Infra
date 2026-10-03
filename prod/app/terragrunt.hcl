@@ -21,7 +21,8 @@ dependency "cognito" {
   mock_outputs = {
     cognito_client_id = "mock-client-id"
   }
-  mock_outputs_allowed_statuses = ["unapplied"]
+  # 🟢 Fixed: Changed to allowed commands configuration
+  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 # 2. Pull details from your custom VPC workspace state file
@@ -34,7 +35,8 @@ dependency "vpc" {
     vpc_id           = "vpc-12345678"
     public_subnet_id = "subnet-12345678"
   }
-  mock_outputs_allowed_statuses = ["unapplied"]
+  # 🟢 Fixed: Changed to allowed commands configuration
+  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 # 3. Pull details from your custom IAM workspace state file
@@ -45,7 +47,8 @@ dependency "iam" {
   mock_outputs = {
     instance_profile_name = "mock-instance-profile-name"
   }
-  mock_outputs_allowed_statuses = ["unapplied"]
+  # 🟢 Fixed: Changed to allowed commands configuration
+  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 # 🟢 Map those local configurations down to the module's input variables
