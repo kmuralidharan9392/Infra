@@ -49,6 +49,23 @@ resource "aws_cognito_user_pool" "user_pool" {
   }
 }
 
+
+# Create the Admin Group
+resource "aws_cognito_user_group" "admin_group" {
+  name         = "admin"
+  user_pool_id = aws_cognito_user_pool.user_pool.id
+  description  = "Administrative users with elevated API access"
+  precedence   = 1
+}
+
+# Create the Customer Group
+resource "aws_cognito_user_group" "customer_group" {
+  name         = "customer"
+  user_pool_id = aws_cognito_user_pool.user_pool.id
+  description  = "Standard retail customer users"
+  precedence   = 2
+}
+
 # 3. Dynamic Cognito App Client Resource Block
 resource "aws_cognito_user_pool_client" "client" {
   # 🟢 Dynamic Naming: output example -> "preva-clothing-client-prod-ap-south-1"
