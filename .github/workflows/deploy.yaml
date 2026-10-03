@@ -40,7 +40,7 @@ jobs:
       - name: Terragrunt Plan All
         working-directory: ./prod
         run: |
-          terragrunt run-all plan --terragrunt-non-interactive -out=tfplan
+          terragrunt run-all plan --terragrunt-non-interactive
 
   apply:
     name: "Terragrunt Apply All"
@@ -75,4 +75,4 @@ jobs:
       - name: Terragrunt Apply All
         working-directory: ./prod
         run: |
-          terragrunt run-all apply --terragrunt-non-interactive tfplan
+          terragrunt run-all apply --terragrunt-non-interactive
