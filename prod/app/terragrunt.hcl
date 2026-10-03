@@ -16,17 +16,36 @@ locals {
 dependency "cognito" {
   # 🟢 UPDATED: Stays as "../cognito" because they are still neighbors inside the /prod folder!
   config_path = "../cognito"
+
+  # 🟢 Added mock outputs for the plan phase
+  mock_outputs = {
+    cognito_client_id = "mock-client-id"
+  }
+  mock_outputs_allowed_statuses = ["unapplied"]
 }
 
 # 2. Pull details from your custom VPC workspace state file
 dependency "vpc" {
   # 🟢 UPDATED: Stays as "../vpc" because it is also a neighbor inside the /prod folder!
   config_path = "../vpc"
+
+    # 🟢 Added mock outputs for the plan phase
+  mock_outputs = {
+    vpc_id           = "vpc-12345678"
+    public_subnet_id = "subnet-12345678"
+  }
+  mock_outputs_allowed_statuses = ["unapplied"]
 }
 
 # 3. Pull details from your custom IAM workspace state file
 dependency "iam" {
   config_path = "../iam"
+
+    # 🟢 Added mock outputs for the plan phase
+  mock_outputs = {
+    instance_profile_name = "mock-instance-profile-name"
+  }
+  mock_outputs_allowed_statuses = ["unapplied"]
 }
 
 # 🟢 Map those local configurations down to the module's input variables
