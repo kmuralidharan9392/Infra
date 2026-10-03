@@ -27,7 +27,6 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   schema {
     attribute_data_type = "String"
-    developer_only_attribute = false # 🟢 Add this explicitly
     mutable             = true
     name                = "email"
     required            = true 
@@ -39,7 +38,6 @@ resource "aws_cognito_user_pool" "user_pool" {
 
   schema {
     attribute_data_type = "String"
-    developer_only_attribute = false # 🟢 Add this explicitly
     mutable             = true
     name                = "phone_number"
     required            = false 
@@ -48,6 +46,11 @@ resource "aws_cognito_user_pool" "user_pool" {
   tags = {
     Environment = var.environment
     Region      = var.aws_region
+  }
+
+  # 🟢 FIXED: This prevents Terraform from trying to recreate/update the schema array forever
+  lifecycle {
+    ignore_changes = [schema]
   }
 }
 
