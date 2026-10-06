@@ -79,6 +79,9 @@ resource "aws_instance" "app_server" {
   subnet_id              = var.public_subnet_id 
   iam_instance_profile   = var.instance_profile_name
 
+  # 🟢 Ensure this is false so it doesn't request a standard public IP
+  associate_public_ip_address = false
+
   # Inject your Cognito settings cleanly as system environment variables on boot
    # 🟢 UPDATED: Port fixed to 8080 and full environment variable context injected!
   user_data = <<-EOF
@@ -97,6 +100,22 @@ resource "aws_instance" "app_server" {
     Environment = var.environment
     Region      = var.aws_region
   }
+}
+
+# 2. 🟢 ADDED: Allocate a static Elastic IP in your VPC
+resource "aws_eip" "app_server_eip" {
+  domain = "vpc"
+
+  tags = {
+    Name        = "preva-clothing-eip-${var.environment}-${var.aws_region}"
+    Environment = var.environment
+  }
+}
+
+# 3. 🟢 ADDED: Bind the Elastic IP directly to your EC2 instance
+resource "aws_eip_association" "eip_assoc" {
+  instance_id   = aws_instance.app_server.id
+  allocation_id = aws_eip.app_server_eip.id
 }
 
 # Output the public IP so you can easily target it for deployment later
