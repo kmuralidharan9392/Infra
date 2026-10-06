@@ -41,7 +41,8 @@ resource "aws_subnet" "public_subnet" {
   # 🟢 Dynamic Availability Zone: becomes "ap-south-1a" or "us-east-1a"
   availability_zone = "${var.aws_region}a"
 
-  map_public_ip_on_launch = true 
+  # 🟢 CHANGED: Stop assigning non-elastic public IPs automatically
+  map_public_ip_on_launch = false 
 
   tags = {
     # 🟢 Dynamic Naming: "preva-clothing-public-subnet-1a-prod"
