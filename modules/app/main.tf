@@ -79,6 +79,8 @@ resource "aws_instance" "app_server" {
   subnet_id              = var.public_subnet_id 
   iam_instance_profile   = var.instance_profile_name
 
+  key_name = aws_key_pair.deployer.key_name
+
   # 🟢 Ensure this is false so it doesn't request a standard public IP
   associate_public_ip_address = false
 
@@ -92,6 +94,8 @@ resource "aws_instance" "app_server" {
               echo "export COGNITO_CLIENT_ID=${var.cognito_client_id}" >> /etc/profile.d/app_env.sh
               echo "export COGNITO_USER_POOL_ID=${var.cognito_user_pool_id}" >> /etc/profile.d/app_env.sh
               echo "export COGNITO_CLIENT_SECRET=${var.cognito_client_secret}" >> /etc/profile.d/app_env.sh
+              sudo apt-get update -y
+              sudo apt-get install openjdk-21-jdk-headless -y
               EOF
 
   tags = {
@@ -116,6 +120,12 @@ resource "aws_eip" "app_server_eip" {
 resource "aws_eip_association" "eip_assoc" {
   instance_id   = aws_instance.app_server.id
   allocation_id = aws_eip.app_server_eip.id
+}
+
+# 4. 🟢 ADDED: Define the key pair resource in Terraform
+resource "aws_key_pair" "deployer" {
+  key_name   = "preva-deployer-key"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMxX6t82IIkRdKho6O/Y+nDSkk9H6+3yklGlKuDl/FzH arun-ec2-deployer"
 }
 
 # Output the public IP so you can easily target it for deployment later
