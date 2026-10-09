@@ -42,7 +42,8 @@ resource "aws_iam_role_policy" "cognito_access" {
       Action   = [
         "cognito-idp:SignUp",
         "cognito-idp:InitiateAuth",
-        "cognito-idp:ConfirmSignUp"
+        "cognito-idp:ConfirmSignUp",
+        "cognito-idp:AdminAddUserToGroup"
       ]
       Resource = "*" 
     }]
